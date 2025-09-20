@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Новостной портал</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 100px;
+        }
+        
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .animated {
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        .slide-in {
+            animation: slideIn 0.6s ease-out;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* Шапка */
+        header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: 100% 100%;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        /* Контейнер */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Новости */
+        .news-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .news-item {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .news-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(to right, var(--secondary), var(--accent));
+        }
+        
+        .news-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+        }
+        
+        .news-prefix {
+            font-weight: bold;
+            color: var(--secondary);
+            margin-bottom: 12px;
+            display: block;
+            font-size: 1.1rem;
+        }
+        
+        .news-content {
+            margin-bottom: 18px;
+            line-height: 1.7;
+        }
+        
+        .news-author {
+            font-style: italic;
+            color: #7f8c8d;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .news-author i {
+            margin-right: 8px;
+            color: var(--accent);
+        }
+        
+        .news-date {
+            color: #95a5a6;
+            font-size: 0.85rem;
+            margin-top: 8px;
+        }
+        
+        /* Форма входа */
+        .login-form {
+            max-width: 450px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--primary);
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .login-form h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(to right, var(--secondary), var(--accent));
+            border-radius: 3px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            border-color: var(--secondary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        button {
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.4);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(52, 152, 219, 0.5);
+        }
+        
+        /* Админ-панель */
+        .admin-panel {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .admin-panel h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--primary);
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .admin-panel h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(to right, var(--secondary), var(--accent));
+            border-radius: 3px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            min-height: 180px;
+            resize: vertical;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            border-color: var(--secondary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            appearance: none;
+            background: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") no-repeat right 14px center;
+            background-size: 16px;
+        }
+        
+        select:focus {
+            border-color: var(--secondary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .logout-btn {
+            background: linear-gradient(to right, var(--accent), #c0392b);
+            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.4);
+            margin-top: 15px;
+        }
+        
+        .logout-btn:hover {
+            box-shadow: 0 6px 15px rgba(231, 76, 60, 0.5);
+        }
+        
+        .error {
+            color: var(--accent);
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: rgba(231, 76, 60, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* Навигация */
+        nav {
+            background: white;
+            padding: 15px 0;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        nav a {
+            color: var(--dark);
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: linear-gradient(to right, var(--secondary), var(--accent));
+            transition: width 0.3s;
+        }
+        
+        nav a:hover {
+            color: var(--secondary);
+        }
+        
+        nav a:hover::after {
+            width: 70%;
+        }
+        
+        /* Футер */
+        footer {
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 50px;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+        
+        .footer-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .footer-links a:hover {
+            color: var(--secondary);
+        }
+        
+        .admin-access {
+            margin-top: 20px;
+        }
+        
+        .admin-btn {
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            width: auto;
+            display: inline-block;
+            box-shadow: none;
+        }
+        
+        .admin-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .news-container {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="animated">
+        <h1>Новостной портал</h1>
+        <p>Самые свежие и актуальные новости</p>
+    </header>
+    
+    <div id="app">
+        <!-- Страница входа -->
+        <div id="login-page" class="login-form hidden">
+            <h2>Вход в админ-панель</h2>
+            <div id="login-error" class="error hidden">Неверный логин или пароль</div>
+            <div class="form-group">
+                <label for="username">Логин:</label>
+                <input type="text" id="username" placeholder="Введите ваш логин">
+            </div>
+            <div class="form-group">
+                <label for="password">Пароль:</label>
+                <input type="password" id="password" placeholder="Введите ваш пароль">
+            </div>
+            <button id="login-btn">Войти</button>
+            <button id="back-btn" class="logout-btn">Назад к сайту</button>
+        </div>
+        
+        <!-- Главная страница с новостями -->
+        <div id="main-page">
+            <nav>
+                <a href="#" id="news-link"><i class="fas fa-newspaper"></i> Новости</a>
+                <a href="#" id="admin-link" class="hidden"><i class="fas fa-cog"></i> Админ-панель</a>
+                <a href="#" id="logout-link" class="hidden"><i class="fas fa-sign-out-alt"></i> Выйти</a>
+            </nav>
+            
+            <div class="container">
+                <h2 class="slide-in">Последние новости</h2>
+                <div id="news-container" class="news-container">
+                    <!-- Новости будут загружены здесь -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Админ-панель -->
+        <div id="admin-page" class="admin-panel hidden">
+            <h2>Админ-панель</h2>
+            <div class="form-group">
+                <label for="news-prefix">Префикс для новости:</label>
+                <select id="news-prefix">
+                    <option value="Въеб">Въеб</option>
+                    <option value="Новость о мире ОСИНТ">Новость о мире ОСИНТ</option>
+                    <option value="Слив">Слив</option>
+                    <option value="Реклама">Реклама</option>
+                    <option value="Информация">Информация</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="news-content">Текст для новости:</label>
+                <textarea id="news-content" placeholder="Введите текст новости"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="news-author">Кто написал новость:</label>
+                <input type="text" id="news-author" placeholder="Ваше имя">
+            </div>
+            <button id="publish-btn">Опубликовать новость</button>
+            <button id="back-to-news" class="logout-btn">Вернуться к новостям</button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="https://t.me/userskaratel" target="_blank">
+                    <i class="fab fa-telegram"></i>
+                    Создатель Сайта: https://t.me/userskaratel
+                </a>
+                <a href="https://t.me/knayzdefence" target="_blank">
+                    <i class="fab fa-telegram"></i>
+                    Главный Администратор: https://t.me/knayzdefence
+                </a>
+                <a href="https://t.me/ShinyGps" target="_blank">
+                    <i class="fab fa-telegram"></i>
+                    Главный Администратор: https://t.me/ShinyGps
+                </a>
+            </div>
+            <div class="admin-access">
+                <button id="admin-access-btn" class="admin-btn float">
+                    <i class="fas fa-lock"></i> Доступ к админ-панели
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Данные пользователей
+        const users = [
+            { username: 'karatel', password: 'tgkaratel', isAdmin: true },
+            { username: 'Falkarat', password: '1357997531', isAdmin: false },
+            { username: 'knayzdefpidoras', password: 'Der5hsg9erzpe', isAdmin: false }
+        ];
+        
+        // Массив для хранения новостей
+        let news = JSON.parse(localStorage.getItem('news')) || [];
+        
+        // Если новостей нет, добавим несколько примеров
+        if (news.length === 0) {
+            news = [
+                {
+                    id: 1,
+                    prefix: "Информация",
+                    content: "Добро пожаловать на наш новостной портал! Здесь вы найдете самые свежие и актуальные новости из разных сфер.",
+                    author: "Администратор",
+                    date: new Date().toLocaleString('ru-RU')
+                },
+                {
+                    id: 2,
+                    prefix: "Новость о мире ОСИНТ",
+                    content: "Современные технологии ОСИНТ позволяют эффективно решать сложные задачи анализа данных и обеспечения безопасности.",
+                    author: "Редактор",
+                    date: new Date().toLocaleString('ru-RU')
+                }
+            ];
+            localStorage.setItem('news', JSON.stringify(news));
+        }
+        
+        // Элементы DOM
+        const loginPage = document.getElementById('login-page');
+        const mainPage = document.getElementById('main-page');
+        const adminPage = document.getElementById('admin-page');
+        const newsContainer = document.getElementById('news-container');
+        const adminLink = document.getElementById('admin-link');
+        const logoutLink = document.getElementById('logout-link');
+        const loginBtn = document.getElementById('login-btn');
+        const publishBtn = document.getElementById('publish-btn');
+        const backToNewsBtn = document.getElementById('back-to-news');
+        const backBtn = document.getElementById('back-btn');
+        const loginError = document.getElementById('login-error');
+        const adminAccessBtn = document.getElementById('admin-access-btn');
+        
+        // Текущий пользователь
+        let currentUser = null;
+        
+        // Проверка авторизации при загрузке страницы
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                updateUI();
+                loadNews();
+            }
+        });
+        
+        // Обработчик кнопки доступа к админ-панели
+        adminAccessBtn.addEventListener('click', () => {
+            showLoginPage();
+        });
+        
+        // Обработчик входа
+        loginBtn.addEventListener('click', () => {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            const user = users.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                loginError.classList.add('hidden');
+                showMainPage();
+                updateUI();
+                loadNews();
+            } else {
+                loginError.classList.remove('hidden');
+            }
+        });
+        
+        // Обработчик выхода
+        logoutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            updateUI();
+        });
+        
+        // Переход в админ-панель
+        adminLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showAdminPage();
+        });
+        
+        // Возврат к новостям
+        backToNewsBtn.addEventListener('click', () => {
+            showMainPage();
+        });
+        
+        backBtn.addEventListener('click', () => {
+            showMainPage();
+        });
+        
+        // Публикация новости
+        publishBtn.addEventListener('click', () => {
+            const prefix = document.getElementById('news-prefix').value;
+            const content = document.getElementById('news-content').value;
+            const author = document.getElementById('news-author').value || currentUser.username;
+            
+            if (!content) {
+                alert('Текст новости не может быть пустым!');
+                return;
+            }
+            
+            const newNews = {
+                id: Date.now(),
+                prefix,
+                content,
+                author,
+                date: new Date().toLocaleString('ru-RU')
+            };
+            
+            news.unshift(newNews);
+            localStorage.setItem('news', JSON.stringify(news));
+            
+            // Очищаем форму
+            document.getElementById('news-content').value = '';
+            document.getElementById('news-author').value = '';
+            
+            alert('Новость успешно опубликована!');
+            showMainPage();
+            loadNews();
+        });
+        
+        // Функции отображения страниц
+        function showLoginPage() {
+            loginPage.classList.remove('hidden');
+            mainPage.classList.add('hidden');
+            adminPage.classList.add('hidden');
+        }
+        
+        function showMainPage() {
+            loginPage.classList.add('hidden');
+            mainPage.classList.remove('hidden');
+            adminPage.classList.add('hidden');
+        }
+        
+        function showAdminPage() {
+            loginPage.classList.add('hidden');
+            mainPage.classList.add('hidden');
+            adminPage.classList.remove('hidden');
+        }
+        
+        // Обновление интерфейса в зависимости от авторизации
+        function updateUI() {
+            if (currentUser) {
+                adminLink.classList.remove('hidden');
+                logoutLink.classList.remove('hidden');
+                adminAccessBtn.classList.add('hidden');
+            } else {
+                adminLink.classList.add('hidden');
+                logoutLink.classList.add('hidden');
+                adminAccessBtn.classList.remove('hidden');
+            }
+        }
+        
+        // Загрузка новостей
+        function loadNews() {
+            newsContainer.innerHTML = '';
+            
+            if (news.length === 0) {
+                newsContainer.innerHTML = '<p class="animated">Новостей пока нет.</p>';
+                return;
+            }
+            
+            news.forEach((item, index) => {
+                const newsItem = document.createElement('div');
+                newsItem.className = 'news-item animated';
+                newsItem.style.animationDelay = `${index * 0.1}s`;
+                newsItem.innerHTML = `
+                    <span class="news-prefix">${item.prefix}</span>
+                    <p class="news-content">${item.content}</p>
+                    <div class="news-info">
+                        <span class="news-author"><i class="fas fa-user"></i> ${item.author}</span>
+                        <div class="news-date"><i class="far fa-clock"></i> ${item.date}</div>
+                    </div>
+                `;
+                newsContainer.appendChild(newsItem);
+            });
+        }
+        
+        // Инициализация
+        loadNews();
+    </script>
+</body>
+              </html>
